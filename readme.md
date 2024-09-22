@@ -1,22 +1,30 @@
 # Mission 2
 
-## Part 0
+## Part 1
+[https://drive.google.com/file/d/179zhRsN3XCF0Z3JLfjyTTid1jN0MfRGk/view?usp=sharing](https://drive.google.com/file/d/179zhRsN3XCF0Z3JLfjyTTid1jN0MfRGk/view?usp=sharing)
 
-https://drive.google.com/file/d/1pQutfGn7-czTlUhRDIvfbhGPm0Vt8yuf/view?usp=sharing
-## Part1
+## Part2
 
-- Вопрос 1	 
-> SSH используется для удаленного подключения к серверам. Позволяет шифровать файлы и обеспечивать их безопасную передачу.  
+###*1.Получить список юзернеймов пользователей*
+  select username from users
 
-- Вопрос 2	 
-> ~/.ssh/authorized_keys
+###*2.Получить кол-во отправленных сообщений каждым пользователем*
+  select users.username, count (messages. id) as number_of_sent_messages from users
+  left join messages on users.id = messages.from
+  group by users.id
 
-- Вопрос 3	 
-> Long polling – это способ получения ответа от сервера, когда клиент отправляет запрос на сервер и ждет ответа. При webhooks клиент предоставляет собственный URL серверу и при появлении обновлений сервер отправляет уведомление клиенту.  
+###*3.Получить пользователя с самым большим кол-вом полученных сообщений и само количество*
+  select users.username, count(messages.id) as received_messages from users
+  join messages on users.id = messages.to
+  group by users.id
+  order by received _messages desc
+  limit 1
 
-- Вопрос 4	 
-> Issues в github – это создаваемые в репозитории элементы, в рамках которых можно обсуждать проблемы, планировать работу и т.д. https://github.com/lucidrains/PaLM-rlhf-pytorch/issues  https://github.com/Kanaries/Rath/issues 
-
-
-- Вопрос 5	 
-> Можно создать файл README.md, в котором можно описать данную папку. Или добавить любой пустой файл. 
+###*4.Получить среднее кол-во сообщений, отправленное каждым пользователем*
+  select avg (number_of_sent_messages) as avg_number_of_sent_messages 
+  from (
+    select count (messages.id) as number_of_sent_messages 
+    from users
+    left join messages on users. id = messages.from
+    group by users. id 
+  ) as count_for_users
